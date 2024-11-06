@@ -1,0 +1,24 @@
+*{
+	margin: auto;
+}
+
+
+
+header{
+	background-color: #ff3131;
+}
+
+.banner{
+	padding-top: 7px;
+	width: 500px;
+	background-color: #ff3131;
+}
+
+.magicwheel{
+	background-color: #ff3131;
+	color: white;
+	font-size: 36px;
+}
+
+
+
