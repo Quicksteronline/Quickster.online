@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quickie Wheel</title>
+    <style>
+
+
+        header{
+            background-color: #ff3131;
+            padding-bottom: 24px;
+            flex: 0 0 15%;
+        }
+
+        .banner{
+        padding-top: 7px;
+        padding-bottom: 7px;
+        width: 500px;
+        background-color: #ff3131;
+        padding: 10px;
+        }
+
+        body {
+            background-color: #ff3131;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            height: 100vh;
+        }
+
+
+        #wheel-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            flex: 1;
+        }
+
+        #wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 5px solid white;
+            transform: rotate(0deg);
+            transition: transform 4s ease-out;
+
+        }
+
+        #arrow {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            background-color: white;
+            border-radius: 50%;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            color: #ff3131;
+            font-size: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+        }
+
+        #form-container {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 0 0 20%;
+        }
+
+        .segment-input {
+            width: 80%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        #spin-button {
+            padding: 10px 20px;
+            background-color: white;
+            color: #ff3131;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #spin-button:hover {
+            background-color: #ffdcdc;
+        }
+
+        footer{
+            background-color: #ff3131;
+            padding-bottom: 24px;
+            flex: 0 0 15%;
+        }
+
+        .QBF{
+            width: 1010px;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+    <center><img src="bannerofficial.jpg"class="banner"></center>
+    </header>
+
+    <div id="wheel-container">
+        <div id="arrow">❤️</div>
+        <canvas id="wheel"></canvas>
+    </div>
+    <div id="form-container">
+        <input type="text" class="segment-input" id="segment1" placeholder="Enter value for segment 1">
+        <input type="text" class="segment-input" id="segment2" placeholder="Enter value for segment 2">
+        <input type="text" class="segment-input" id="segment3" placeholder="Enter value for segment 3">
+        <input type="text" class="segment-input" id="segment4" placeholder="Enter value for segment 4">
+        <input type="text" class="segment-input" id="segment5" placeholder="Enter value for segment 5">
+        <input type="text" class="segment-input" id="segment6" placeholder="Enter value for segment 6">
+        <input type="text" class="segment-input" id="segment7" placeholder="Enter value for segment 7">
+        <button id="spin-button">Spin the Wheel</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('wheel');
+        const context = canvas.getContext('2d');
+        const spinButton = document.getElementById('spin-button');
+        const segmentInputs = Array.from(document.querySelectorAll('.segment-input'));
+
+        canvas.width = 300;
+        canvas.height = 300;
+
+        const wheel = {
+            segments: ["Segment 1", "Segment 2", "Segment 3", "Segment 4", "Segment 5", "Segment 6", "Segment 7"],
+            colors: Array(7).fill('#ff3131'),
+            textColor: 'white',
+            rotation: 0
+        };
+
+        function drawWheel() {
+            const { segments, colors, textColor } = wheel;
+            const radius = canvas.width / 2;
+            const arcSize = (2 * Math.PI) / segments.length;
+
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            segments.forEach((segment, index) => {
+                const startAngle = index * arcSize;
+                const endAngle = startAngle + arcSize;
+
+                // Draw segment
+                context.beginPath();
+                context.moveTo(radius, radius);
+                context.arc(radius, radius, radius, startAngle, endAngle);
+                context.closePath();
+                context.fillStyle = colors[index];
+                context.fill();
+
+                // Draw dividing line
+                context.strokeStyle = 'white';
+                context.lineWidth = 2;
+                context.beginPath();
+                context.moveTo(radius, radius);
+                context.lineTo(
+                    radius + radius * Math.cos(startAngle),
+                    radius + radius * Math.sin(startAngle)
+                );
+                context.stroke();
+
+                // Draw text
+                context.fillStyle = textColor;
+                context.font = 'bold 14px Arial';
+                context.textAlign = 'center';
+                context.textBaseline = 'middle';
+
+                const textAngle = startAngle + arcSize / 2;
+                const textX = radius + Math.cos(textAngle) * (radius / 1.5);
+                const textY = radius + Math.sin(textAngle) * (radius / 1.5);
+                context.save();
+                context.translate(textX, textY);
+                context.rotate(textAngle);
+                context.fillText(segment, 0, 0);
+                context.restore();
+            });
+        }
+
+        function spinWheel() {
+            const randomSpin = Math.random() * 360 + 720; // Minimum 2 full rotations
+            wheel.rotation += randomSpin;
+            canvas.style.transform = `rotate(${wheel.rotation}deg)`;
+        }
+
+        function updateSegments() {
+            const inputValues = segmentInputs.map(input => input.value.trim());
+            if (inputValues.every(value => value)) {
+                wheel.segments = inputValues;
+                drawWheel();
+            } else {
+                alert('Please fill in all 7 segments.');
+            }
+        }
+
+        spinButton.addEventListener('click', () => {
+            updateSegments();
+            spinWheel();
+        });
+
+        drawWheel();
+    </script>
+
+    <footer background-color: #ff3131>
+
+        <h2 color: #FFFFFF><bold><center>Copyright © www.quickster.online®™</center></bold></h2>
+        <br>
+        <center><img src="QBF.png"class="QBF"></center>
+        
+        
+    </footer>
+</body>
+</html>
